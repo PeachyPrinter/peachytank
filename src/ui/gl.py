@@ -101,17 +101,17 @@ class Canvas(glcanvas.GLCanvas):
 
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0,0.0,0.0,1.0])
         # glShadeModel(GL_SMOOTH)
         # glEnable(GL_COLOR_MATERIAL)
         self.lights = [
             [1.1, -1.1, 0.0, 1.],
-            [-1.1, 1.1, 0.0, 1.],
-            [0.5, 0.5, 1.5, 1.]
         ] 
         glLightfv(GL_LIGHT0, GL_POSITION, self.lights[0])
-        glLightfv(GL_LIGHT1, GL_POSITION, self.lights[1])
-        glLightfv(GL_LIGHT2, GL_POSITION, self.lights[2])
+
+        glLightfv(GL_LIGHT0, GL_AMBIENT, [0.2,0.2,0.2,1.0])
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.8,0.0,0.0,1.0])
+        glLightfv(GL_LIGHT0, GL_SPECULAR,[0.0,0.0,0.0,1.0])
         
 
         glutInit()
@@ -119,6 +119,7 @@ class Canvas(glcanvas.GLCanvas):
 
 
     def show_lights(self):
+        glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [1.0, 1.0, 1.0, 1.0])
         for light in self.lights:
             light_pos = light[:3]
             light_inv = [coord * -1 for coord in light[:3]]
