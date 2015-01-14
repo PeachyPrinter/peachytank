@@ -29,6 +29,7 @@ class Canvas(glcanvas.GLCanvas):
         self.Bind(wx.EVT_LEFT_UP, self.OnMouseUp)
         self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
+        self.tank = None
         self.tank_draw = tank.DrawTank()
 
     def OnEraseBackground(self, event):
@@ -92,31 +93,50 @@ class Canvas(glcanvas.GLCanvas):
 
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_LIGHTING)
+        
         glEnable(GL_LIGHT0)
+        glEnable(GL_LIGHT1)
+        glEnable(GL_LIGHT2)
 
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         
         # glShadeModel(GL_SMOOTH)
         # glEnable(GL_COLOR_MATERIAL)
-        lightpos = [0.0, 0.0, 1.0, 0.]
-        glLightfv(GL_LIGHT0, GL_AMBIENT, lightpos)
+        self.lights = [
+            [0.5, -0.5, 1.0, 0.],
+            [-0.5, 0.5, 1.0, 0.],
+            [0.5, 0.5, -1.0, 0.]
+        ] 
+        glLightfv(GL_LIGHT0, GL_POSITION, self.lights[0])
+        glLightfv(GL_LIGHT1, GL_POSITION, self.lights[1])
+        glLightfv(GL_LIGHT2, GL_POSITION, self.lights[2])
+        
 
         glutInit()
-
-
         self.DoSetViewport()
+
+
+    def show_lights(self):
+        for light in self.lights:
+            light_pos = light[:3]
+            light_inv = [coord * -1 for coord in light[:3]]
+            glTranslatef(*light_pos)
+            glutWireSphere(0.04,  10, 10)
+            glTranslatef(*light_inv)
 
     def OnDraw(self):
         # clear color and depth buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
+        
         # self.processor.updatenow()
         # index = self.processor.get_index()
         # if index:
         #     glCallList(index)
         # glutWireCube(1.0)
-        self.tank_draw.draw_tank(None)
+        if self.tank:
+            self.tank_draw.draw_tank(self.tank)
 
         if self.size is None:
             self.size = self.GetClientSize()
@@ -151,5 +171,7 @@ class Canvas(glcanvas.GLCanvas):
 
         self.last_scale = self.scale
         self.lastrotx, self.lastroty = self.xrot, self.yrot
+
+        self.show_lights()
 
         self.SwapBuffers()
