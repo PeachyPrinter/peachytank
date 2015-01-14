@@ -4,7 +4,8 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 import logging
 
-from infrastructure import tank
+from domain.objects import Tank
+from gl_objects import *
 
 
 class Canvas(glcanvas.GLCanvas):
@@ -30,7 +31,7 @@ class Canvas(glcanvas.GLCanvas):
         self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
         self.tank = None
-        self.tank_draw = tank.DrawTank()
+        self.tank_draw = DrawTank()
 
     def OnEraseBackground(self, event):
         # Do nothing, to avoid flashing on MSW.
@@ -104,9 +105,9 @@ class Canvas(glcanvas.GLCanvas):
         # glShadeModel(GL_SMOOTH)
         # glEnable(GL_COLOR_MATERIAL)
         self.lights = [
-            [0.5, -0.5, 1.0, 0.],
-            [-0.5, 0.5, 1.0, 0.],
-            [0.5, 0.5, -1.0, 0.]
+            [1.1, -1.1, 0.0, 1.],
+            [-1.1, 1.1, 0.0, 1.],
+            [0.5, 0.5, 1.5, 1.]
         ] 
         glLightfv(GL_LIGHT0, GL_POSITION, self.lights[0])
         glLightfv(GL_LIGHT1, GL_POSITION, self.lights[1])
@@ -136,7 +137,7 @@ class Canvas(glcanvas.GLCanvas):
         #     glCallList(index)
         # glutWireCube(1.0)
         if self.tank:
-            self.tank_draw.draw_tank(self.tank)
+            self.tank_draw.draw(self.tank)
 
         if self.size is None:
             self.size = self.GetClientSize()
