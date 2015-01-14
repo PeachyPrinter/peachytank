@@ -14,12 +14,16 @@ class DrawTank(GLObject):
         self.quad = glu.gluNewQuadric()
 
     def draw_cylinder(self, inside, outside, height, base_thickness):
+        gl.glRotate(180, 0.0, 1.0, 0.0)
         glu.gluDisk(self.quad, 0, outside, 100, 5)
+        gl.glRotate(-180, 0.0, 1.0, 0.0)
         gl.glTranslatef(0.0, 0.0, height)
         glu.gluDisk(self.quad, inside, outside, 100, 5)
         gl.glTranslatef(0.0, 0.0, -height)
         gl.glTranslatef(0.0, 0.0, base_thickness)
+        glu.gluQuadricOrientation(self.quad, glu.GLU_INSIDE)
         glu.gluCylinder(self.quad, inside, inside, height - base_thickness, 100, 1)
+        glu.gluQuadricOrientation(self.quad, glu.GLU_OUTSIDE)
         glu.gluDisk(self.quad, 0, inside, 100, 5)
         gl.glTranslatef(0.0, 0.0, -base_thickness)
         glu.gluCylinder(self.quad, outside, outside, height, 100, 1)
@@ -102,6 +106,9 @@ class DrawTank(GLObject):
         gl.glMaterialfv(gl.GL_FRONT, gl.GL_DIFFUSE, [0.8, 0.8, 0.8, 1])
         gl.glMaterialfv(gl.GL_FRONT, gl.GL_SPECULAR, [0.0, 0.8, 0.8, 1])
         gl.glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [0.0, 0.0, 0.0, 0.0])
-        # gl.glMaterialfv(gl.GL_FRONT, gl.GL_SHININESS, [50])
-        # self.draw_cylinder(scaled_tank.inside_radius_mm, scaled_tank.outside_radius_mm, scaled_tank.height_mm, scaled_tank.material_thickness_mm)
-        self.draw_box(scaled_tank.inside_radius_mm, scaled_tank.outside_radius_mm, scaled_tank.height_mm, scaled_tank.material_thickness_mm)
+        if scaled_tank.shape == 'Box':
+            self.draw_box(scaled_tank.inside_radius_mm, scaled_tank.outside_radius_mm, scaled_tank.height_mm, scaled_tank.material_thickness_mm)
+        else:
+            gl.glMaterialfv(gl.GL_FRONT, gl.GL_SHININESS, [50])
+            self.draw_cylinder(scaled_tank.inside_radius_mm, scaled_tank.outside_radius_mm, scaled_tank.height_mm, scaled_tank.material_thickness_mm)
+        

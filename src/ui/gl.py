@@ -80,6 +80,7 @@ class Canvas(glcanvas.GLCanvas):
             self.Refresh(False)
 
     def InitGL(self):
+        logging.info("Initing")
         # set viewing projection
         glMatrixMode(GL_PROJECTION)
         glFrustum(-0.5, 0.5, -0.1, 0.5, 0.5, 8.0)
@@ -101,31 +102,32 @@ class Canvas(glcanvas.GLCanvas):
 
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0,0.0,0.0,1.0])
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0, 0.0, 0.0, 1.0])
         # glShadeModel(GL_SMOOTH)
         # glEnable(GL_COLOR_MATERIAL)
-        self.lights = [
-            [1.1, -1.1, 0.0, 1.],
-        ] 
-        glLightfv(GL_LIGHT0, GL_POSITION, self.lights[0])
+ 
+        glLightfv(GL_LIGHT0, GL_POSITION, [0.0, 1.5, 1.5, 1.0])
+        glLightfv(GL_LIGHT0, GL_AMBIENT,  [0.2, 0.2, 0.2, 1.0])
+        glLightfv(GL_LIGHT0, GL_DIFFUSE,  [0.6, 0.0, 0.0, 1.0])
+        glLightfv(GL_LIGHT0, GL_SPECULAR, [0.8, 0.4, 0.4, 1.0])
 
-        glLightfv(GL_LIGHT0, GL_AMBIENT, [0.2,0.2,0.2,1.0])
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.8,0.0,0.0,1.0])
-        glLightfv(GL_LIGHT0, GL_SPECULAR,[0.0,0.0,0.0,1.0])
-        
+        glLightfv(GL_LIGHT1, GL_POSITION, [0.0, -1.5, 1.5, 1.0])
+        glLightfv(GL_LIGHT1, GL_AMBIENT,  [0.2, 0.2, 0.2, 1.0])
+        glLightfv(GL_LIGHT1, GL_DIFFUSE,  [0.0, 0.6, 0.0, 1.0])
+        glLightfv(GL_LIGHT1, GL_SPECULAR, [0.4, 0.8, 0.4, 1.0])
 
         glutInit()
         self.DoSetViewport()
 
 
-    def show_lights(self):
-        glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [1.0, 1.0, 1.0, 1.0])
-        for light in self.lights:
-            light_pos = light[:3]
-            light_inv = [coord * -1 for coord in light[:3]]
-            glTranslatef(*light_pos)
-            glutWireSphere(0.04,  10, 10)
-            glTranslatef(*light_inv)
+    # def show_lights(self):
+    #     glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [1.0, 1.0, 1.0, 1.0])
+    #     for light in self.lights:
+    #         light_pos = light[:3]
+    #         light_inv = [coord * -1 for coord in light[:3]]
+    #         glTranslatef(*light_pos)
+    #         glutWireSphere(0.04,  10, 10)
+    #         glTranslatef(*light_inv)
 
     def OnDraw(self):
         # clear color and depth buffers
@@ -173,7 +175,5 @@ class Canvas(glcanvas.GLCanvas):
 
         self.last_scale = self.scale
         self.lastrotx, self.lastroty = self.xrot, self.yrot
-
-        self.show_lights()
 
         self.SwapBuffers()
