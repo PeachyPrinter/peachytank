@@ -32,13 +32,13 @@ class DrawTank(GLObject):
         base_normal = 1.0 if inside else -1.0
         gl.glBegin(gl.GL_QUADS)
 
-        gl.glNormal( 0.0, -base_normal, 0.0 )
+        gl.glNormal( 0.0, base_normal, 0.0 )
         gl.glVertex3f( width, -width, 0.0     )
         gl.glVertex3f(-width, -width, 0.0     )
         gl.glVertex3f(-width, -width, height  )
         gl.glVertex3f( width, -width, height  )
 
-        gl.glNormal(0.0,base_normal, 0.0)
+        gl.glNormal(0.0, -base_normal, 0.0)
         gl.glVertex3f( width,  width, 0.0     )
         gl.glVertex3f(-width,  width, 0.0     )
         gl.glVertex3f(-width,  width, height  )
@@ -102,13 +102,11 @@ class DrawTank(GLObject):
 
     def draw(self, domain_object):
         scaled_tank = domain_object.get_scaled(1.0)
- 
-        gl.glMaterialfv(gl.GL_FRONT, gl.GL_DIFFUSE, [0.8, 0.8, 0.8, 1])
-        gl.glMaterialfv(gl.GL_FRONT, gl.GL_SPECULAR, [0.0, 0.8, 0.8, 1])
-        gl.glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [0.0, 0.0, 0.0, 0.0])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_DIFFUSE, [0.2, 0.2, 0.8, 1])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_SPECULAR, [0.5, 0.5, 0.9, 1])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [0.1, 0.1, 0.2, 1])
         if scaled_tank.shape == 'Box':
             self.draw_box(scaled_tank.inside_radius_mm, scaled_tank.outside_radius_mm, scaled_tank.height_mm, scaled_tank.material_thickness_mm)
         else:
-            gl.glMaterialfv(gl.GL_FRONT, gl.GL_SHININESS, [50])
+            gl.glMaterialfv(gl.GL_FRONT, gl.GL_SHININESS, [100])
             self.draw_cylinder(scaled_tank.inside_radius_mm, scaled_tank.outside_radius_mm, scaled_tank.height_mm, scaled_tank.material_thickness_mm)
-        

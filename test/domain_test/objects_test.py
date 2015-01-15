@@ -2,8 +2,6 @@
 import unittest
 import sys
 import os
-from mock import patch
-import numpy
 from math import pi
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -106,7 +104,6 @@ class TankTest(unittest.TestCase, Conversions):
         tank = Tank(height_mm, material_thickness_mm, inside_radius_mm, fluid_density, shape)
 
         self.assertAlmostEquals(expected_weight_kg, tank.weight_kg)
-
 
 
 if __name__ == '__main__':

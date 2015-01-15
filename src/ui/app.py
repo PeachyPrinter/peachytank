@@ -11,23 +11,33 @@ class TankInfoPanel(wx.Panel):
     def __init__(self, parent, api):
         wx.Panel.__init__(self, parent=parent)
         self.api = api
-        self.sizer = wx.FlexGridSizer(20, 2, 10, 10)
+        self.sizer = wx.FlexGridSizer(20, 3, 10, 10)
         self.SetSizer(self.sizer)
         self.load_data()
 
     def load_data(self):
         self._remove_old_widgets()
-        self.sizer.AddMany([(0, 10), (0, 10)])
-        for (k, v) in self.api.getTankInfo().iteritems():
+        self.sizer.AddMany([(0, 10), (0, 10), (0, 10)])
+        for (k, v) in self.api.get_tank_info().iteritems():
             key = wx.StaticText(self, label=k)
-            value = wx.StaticText(self, label=v)
-            self.sizer.Add(key, 1, wx.EXPAND)
-            self.sizer.Add(value, 1, wx.EXPAND)
+            if type(v[0]) == type(''):
+                text_data = v[0]
+            else:
+                text_data = '{:5,.2f}'.format(v[0])
+            text = wx.StaticText(self, label=text_data)
+            unit = wx.StaticText(self, label=v[1])
+            self.sizer.Add(key, 0, wx.EXPAND)
+            self.sizer.Add(text, 1, wx.EXPAND)
+            self.sizer.Add(unit, 0)
+            self.Layout()
 
     def _remove_old_widgets(self):
-        for child in self.sizer.GetChildren():
-            child.destroy()
-
+        children = self.sizer.GetChildren()
+        if children:
+            for child in children:
+                self.sizer.Hide(0)
+                self.sizer.Remove(0)
+            self.sizer.Layout()
 
 class PrinterInfoPanel(wx.Panel):
     def __init__(self, parent, api):
@@ -85,17 +95,18 @@ class DisplayPanel(wx.Panel):
 
     def setup_controls(self):
         control_sizer = wx.FlexGridSizer(11, 1, 5, 5)
-        tank_height_label = wx.StaticText(self, label="Tank Height mm")
-        self.tank_height_value_label = wx.StaticText(self, label="200", style=wx.ALIGN_RIGHT)
-        tank_height_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        tank_height_sizer.AddMany([(tank_height_label, 1, wx.EXPAND), (self.tank_height_value_label, 1, wx.EXPAND)])
-        self.tank_height_slider = wx.Slider(self, value=200, minValue=100, maxValue=3000)
 
         printer_height_label = wx.StaticText(self, label="Printer Height mm")
         self.printer_height_value_label = wx.StaticText(self, label="250", style=wx.ALIGN_RIGHT)
         printer_height_sizer = wx.BoxSizer(wx.HORIZONTAL)
         printer_height_sizer.AddMany([(printer_height_label, 1, wx.EXPAND), (self.printer_height_value_label, 1, wx.EXPAND)])
         self.printer_height_slider = wx.Slider(self, value=250, minValue=120, maxValue=3500)
+
+        tank_height_label = wx.StaticText(self, label="Tank Height mm")
+        self.tank_height_value_label = wx.StaticText(self, label="200", style=wx.ALIGN_RIGHT)
+        tank_height_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        tank_height_sizer.AddMany([(tank_height_label, 1, wx.EXPAND), (self.tank_height_value_label, 1, wx.EXPAND)])
+        self.tank_height_slider = wx.Slider(self, value=200, minValue=100, maxValue=3000)
 
         printer_width_label = wx.StaticText(self, label="Tank Width mm")
         self.printer_width_value_label = wx.StaticText(self, label="100", style=wx.ALIGN_RIGHT)
@@ -112,9 +123,9 @@ class DisplayPanel(wx.Panel):
         self.shape_cylinder = wx.RadioButton(self, -1, 'Cylinder', (10, 10), style=wx.RB_GROUP)
         self.shape_box = wx.RadioButton(self, -1, 'Box', (10, 30))
 
-        control_sizer.Add(tank_height_sizer, 1, wx.EXPAND)
-        control_sizer.Add(self.printer_height_slider, 1, wx.EXPAND)
         control_sizer.Add(printer_height_sizer, 1, wx.EXPAND)
+        control_sizer.Add(self.printer_height_slider, 1, wx.EXPAND)
+        control_sizer.Add(tank_height_sizer, 1, wx.EXPAND)
         control_sizer.Add(self.tank_height_slider, 1, wx.EXPAND)
         control_sizer.Add(printer_width_sizer, 1, wx.EXPAND)
         control_sizer.Add(self.printer_width_slider, 1, wx.EXPAND)
@@ -122,15 +133,15 @@ class DisplayPanel(wx.Panel):
         control_sizer.Add(self.material_width_slider, 1, wx.EXPAND)
         control_sizer.Add(self.shape_cylinder)
         control_sizer.Add(self.shape_box)
-        control_sizer.Add((0,10))
+        control_sizer.Add((0, 10))
 
         control_sizer.AddGrowableCol(0)
         return control_sizer
 
     def setup_info_pages(self):
         notebook = wx.Notebook(self)
-        tabOne = TankInfoPanel(notebook, self.api)
-        notebook.AddPage(tabOne, "Tank")
+        self.tankInfo = TankInfoPanel(notebook, self.api)
+        notebook.AddPage(self.tankInfo, "Tank")
         tabTwo = PrinterInfoPanel(notebook, self.api)
         notebook.AddPage(tabTwo, "Printer")
         return notebook
@@ -154,14 +165,17 @@ class DisplayPanel(wx.Panel):
         else:
             shape = 'Box'
 
-        self.canvas.tank = Tank(
+        tank = Tank(
             self.tank_height_slider.GetValue(),
             self.material_width_slider.GetValue(),
             self.printer_width_slider.GetValue(),
+            1199.8,
             shape
             )
+        self.api.set_tank(tank)
+        self.tankInfo.load_data()
+        self.canvas.tank = tank
         self.canvas.OnDraw()
-
 
 class ViewerApp(wx.App):
     def __init__(self, path):

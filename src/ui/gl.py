@@ -108,17 +108,16 @@ class Canvas(glcanvas.GLCanvas):
  
         glLightfv(GL_LIGHT0, GL_POSITION, [0.0, 1.5, 1.5, 1.0])
         glLightfv(GL_LIGHT0, GL_AMBIENT,  [0.2, 0.2, 0.2, 1.0])
-        glLightfv(GL_LIGHT0, GL_DIFFUSE,  [0.6, 0.0, 0.0, 1.0])
-        glLightfv(GL_LIGHT0, GL_SPECULAR, [0.8, 0.4, 0.4, 1.0])
+        glLightfv(GL_LIGHT0, GL_DIFFUSE,  [0.6, 0.6, 0.6, 1.0])
+        glLightfv(GL_LIGHT0, GL_SPECULAR, [0.9, 0.9, 0.9, 1.0])
 
         glLightfv(GL_LIGHT1, GL_POSITION, [0.0, -1.5, 1.5, 1.0])
         glLightfv(GL_LIGHT1, GL_AMBIENT,  [0.2, 0.2, 0.2, 1.0])
-        glLightfv(GL_LIGHT1, GL_DIFFUSE,  [0.0, 0.6, 0.0, 1.0])
-        glLightfv(GL_LIGHT1, GL_SPECULAR, [0.4, 0.8, 0.4, 1.0])
+        glLightfv(GL_LIGHT1, GL_DIFFUSE,  [0.6, 0.6, 0.6, 1.0])
+        glLightfv(GL_LIGHT1, GL_SPECULAR, [0.9, 0.9, 0.9, 1.0])
 
         glutInit()
         self.DoSetViewport()
-
 
     # def show_lights(self):
     #     glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [1.0, 1.0, 1.0, 1.0])

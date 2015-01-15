@@ -1,6 +1,7 @@
 from math import pi
 from conversions import Conversions
 
+
 class Tank(Conversions):
     shapes = ['Cylinder', 'Box']
 
@@ -56,7 +57,7 @@ class Tank(Conversions):
 
     @property
     def volume_kilolitre(self):
-        return self.ml_2_kilolitre(self.volume_ml)
+        return self.ml_to_kilolitre(self.volume_ml)
 
     @property
     def weight_kg(self):
@@ -68,6 +69,6 @@ class Tank(Conversions):
             (self._height_mm / max_detail) * max_size,
             (self.material_thickness_mm / max_detail) * max_size,
             (self._inside_radius_mm / max_detail) * max_size,
-            self._fluid_density,
+            self._fluid_density_kg_per_m3,
             self.shape
             )
