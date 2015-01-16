@@ -105,6 +105,57 @@ class TankTest(unittest.TestCase, Conversions):
 
         self.assertAlmostEquals(expected_weight_kg, tank.weight_kg)
 
+    def test_volume_ml_should_be_calculated_correctly_for_box(self):
+        height_mm = 100
+        fluid_density = 1.0
+        material_thickness_mm = 3
+        inside_radius_mm = 10
+        shape = 'Box'
+        expected_area_mm3 = pow(inside_radius_mm*2.0, 2.0) * height_mm
+        expected_volume_ml = self.cubic_mm_2_cubic_cm(expected_area_mm3)
+
+        tank = Tank(height_mm, material_thickness_mm, inside_radius_mm, fluid_density, shape)
+
+        self.assertAlmostEquals(expected_volume_ml, tank.volume_ml)
+
+    def test_inside_circumference_mm_should_be_calculated_for_box(self):
+        height_mm = 100
+        fluid_density = 1.0
+        material_thickness_mm = 3
+        inside_radius_mm = 120
+        shape = 'Box'
+        expected_inside_circumference_mm = inside_radius_mm * 2.0 * 4.0
+
+        tank = Tank(height_mm, material_thickness_mm, inside_radius_mm, fluid_density, shape)
+
+        self.assertEquals(expected_inside_circumference_mm, tank.inside_circumference_mm)
+
+    def test_inside_diameter_mm_should_be_calculated_for_box(self):
+        height_mm = 100
+        fluid_density = 1.0
+        material_thickness_mm = 3
+        inside_radius_mm = 120
+        shape = 'Box'
+        expected_inside_diameter_mm = inside_radius_mm * 2
+
+        tank = Tank(height_mm, material_thickness_mm, inside_radius_mm, fluid_density, shape)
+
+        self.assertEquals(expected_inside_diameter_mm, tank.inside_diameter_mm)
+
+    def test_weight_kg_should_be_calculated_for_box(self):
+        height_mm = 100
+        fluid_density = 1.0
+        material_thickness_mm = 3
+        inside_radius_mm = 120
+        shape = 'Box'
+        expected_area_mm3 = pow(inside_radius_mm * 2.0, 2.0) * height_mm
+        expected_area_meter3 = self.cubic_mm_2_cubic_meters(expected_area_mm3)
+        expected_weight_kg = expected_area_meter3 * fluid_density
+
+        tank = Tank(height_mm, material_thickness_mm, inside_radius_mm, fluid_density, shape)
+
+        self.assertAlmostEquals(expected_weight_kg, tank.weight_kg)
+
 
 if __name__ == '__main__':
     unittest.main()

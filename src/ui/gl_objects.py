@@ -101,12 +101,28 @@ class DrawTank(GLObject):
         gl.glTranslatef(0.0, 0.0, -height)
 
     def draw(self, domain_object):
-        scaled_tank = domain_object.get_scaled(1.0)
         gl.glMaterialfv(gl.GL_FRONT, gl.GL_DIFFUSE, [0.2, 0.2, 0.8, 1])
         gl.glMaterialfv(gl.GL_FRONT, gl.GL_SPECULAR, [0.5, 0.5, 0.9, 1])
         gl.glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [0.1, 0.1, 0.2, 1])
-        if scaled_tank.shape == 'Box':
-            self.draw_box(scaled_tank.inside_radius_mm, scaled_tank.outside_radius_mm, scaled_tank.height_mm, scaled_tank.material_thickness_mm)
+        if domain_object.shape == 'Box':
+            self.draw_box(domain_object.inside_radius_mm, domain_object.outside_radius_mm, domain_object.height_mm, domain_object.material_thickness_mm)
         else:
             gl.glMaterialfv(gl.GL_FRONT, gl.GL_SHININESS, [100])
-            self.draw_cylinder(scaled_tank.inside_radius_mm, scaled_tank.outside_radius_mm, scaled_tank.height_mm, scaled_tank.material_thickness_mm)
+            self.draw_cylinder(domain_object.inside_radius_mm, domain_object.outside_radius_mm, domain_object.height_mm, domain_object.material_thickness_mm)
+
+
+class DrawPrinter(GLObject):
+    def __init__(self):
+        self.quad = glu.gluNewQuadric()
+
+    def draw(self, domain_object):
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_DIFFUSE, [0.8, 0.2, 0.2, 1])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_SPECULAR, [0.9, 0.5, 0.5, 1])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [0.2, 0.1, 0.1, 1])
+        gl.glTranslatef(0.0, 0.0, domain_object.height_mm)
+        printer_size = 50 * domain_object.relitive_size
+        gl.glTranslatef(0.0, 0.0, printer_size / 2.0)
+        glut.glutSolidCube(printer_size, 5, 5)
+        gl.glTranslatef(0.0, 0.0, -printer_size / 2.0)
+        gl.glTranslatef(0.0, 0.0, -domain_object.height_mm)
+

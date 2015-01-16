@@ -2,7 +2,7 @@ import wx
 import wx.lib.newevent
 import logging
 from gl import Canvas
-from domain.objects import Tank
+from domain.objects import Tank, Printer, PeachySetup
 import random
 from api.printer_model import PrinterModelApi
 
@@ -39,6 +39,7 @@ class TankInfoPanel(wx.Panel):
                 self.sizer.Remove(0)
             self.sizer.Layout()
 
+
 class PrinterInfoPanel(wx.Panel):
     def __init__(self, parent, api):
         wx.Panel.__init__(self, parent=parent)
@@ -49,16 +50,27 @@ class PrinterInfoPanel(wx.Panel):
 
     def load_data(self):
         self._remove_old_widgets()
-        self.sizer.AddMany([(0, 10), (0, 10)])
-        for (k, v) in self.api.getPrinterInfo().iteritems():
+        self.sizer.AddMany([(0, 10), (0, 10), (0, 10)])
+        for (k, v) in self.api.get_tank_info().iteritems():
             key = wx.StaticText(self, label=k)
-            value = wx.StaticText(self, label=v)
-            self.sizer.Add(key, 1, wx.EXPAND)
-            self.sizer.Add(value, 1, wx.EXPAND)
+            if type(v[0]) == type(''):
+                text_data = v[0]
+            else:
+                text_data = '{:5,.2f}'.format(v[0])
+            text = wx.StaticText(self, label=text_data)
+            unit = wx.StaticText(self, label=v[1])
+            self.sizer.Add(key, 0, wx.EXPAND)
+            self.sizer.Add(text, 1, wx.EXPAND)
+            self.sizer.Add(unit, 0)
+            self.Layout()
 
     def _remove_old_widgets(self):
-        for child in self.sizer.GetChildren():
-            child.destroy()
+        children = self.sizer.GetChildren()
+        if children:
+            for child in children:
+                self.sizer.Hide(0)
+                self.sizer.Remove(0)
+            self.sizer.Layout()
 
 
 class DisplayPanel(wx.Panel):
@@ -96,11 +108,11 @@ class DisplayPanel(wx.Panel):
     def setup_controls(self):
         control_sizer = wx.FlexGridSizer(11, 1, 5, 5)
 
-        printer_height_label = wx.StaticText(self, label="Printer Height mm")
+        printer_height_label = wx.StaticText(self, label="Printer Height Above Tank mm")
         self.printer_height_value_label = wx.StaticText(self, label="250", style=wx.ALIGN_RIGHT)
         printer_height_sizer = wx.BoxSizer(wx.HORIZONTAL)
         printer_height_sizer.AddMany([(printer_height_label, 1, wx.EXPAND), (self.printer_height_value_label, 1, wx.EXPAND)])
-        self.printer_height_slider = wx.Slider(self, value=250, minValue=120, maxValue=3500)
+        self.printer_height_slider = wx.Slider(self, value=100, minValue=1, maxValue=3000)
 
         tank_height_label = wx.StaticText(self, label="Tank Height mm")
         self.tank_height_value_label = wx.StaticText(self, label="200", style=wx.ALIGN_RIGHT)
@@ -172,9 +184,12 @@ class DisplayPanel(wx.Panel):
             1199.8,
             shape
             )
+        printer = Printer(self.tank_height_slider.GetValue() + self.printer_height_slider.GetValue())
+        peachy_setup = PeachySetup(tank, printer)
         self.api.set_tank(tank)
+
         self.tankInfo.load_data()
-        self.canvas.tank = tank
+        self.canvas.peachy_setup = peachy_setup
         self.canvas.OnDraw()
 
 class ViewerApp(wx.App):

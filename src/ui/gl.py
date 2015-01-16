@@ -1,14 +1,14 @@
 import wx
-from wx import glcanvas
-from OpenGL.GL import *
 from OpenGL.GLUT import *
+from OpenGL.GL import *
+from wx import glcanvas
 import logging
 
 from domain.objects import Tank
 from gl_objects import *
 
 
-class Canvas(glcanvas.GLCanvas):
+class Canvas(glcanvas.GLCanvas,):
 
     def __init__(self, parent):
         glcanvas.GLCanvas.__init__(self, parent, -1)
@@ -30,8 +30,10 @@ class Canvas(glcanvas.GLCanvas):
         self.Bind(wx.EVT_LEFT_UP, self.OnMouseUp)
         self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
-        self.tank = None
+        self.peachy_setup = None
         self.tank_draw = DrawTank()
+        self.printer_draw = DrawPrinter()
+        glutInit()
 
     def OnEraseBackground(self, event):
         # Do nothing, to avoid flashing on MSW.
@@ -91,14 +93,13 @@ class Canvas(glcanvas.GLCanvas):
 
         # position object
         glRotatef(self.y, 1.0, 0.0, 0.0)
-        glRotatef(self.x, 0.0, 1.0, 0.0)
+        # glRotatef(self.x, 0.0, 1.0, 0.0)
 
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_LIGHTING)
         
         glEnable(GL_LIGHT0)
         glEnable(GL_LIGHT1)
-        glEnable(GL_LIGHT2)
 
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -116,7 +117,6 @@ class Canvas(glcanvas.GLCanvas):
         glLightfv(GL_LIGHT1, GL_DIFFUSE,  [0.6, 0.6, 0.6, 1.0])
         glLightfv(GL_LIGHT1, GL_SPECULAR, [0.9, 0.9, 0.9, 1.0])
 
-        glutInit()
         self.DoSetViewport()
 
     # def show_lights(self):
@@ -129,16 +129,14 @@ class Canvas(glcanvas.GLCanvas):
     #         glTranslatef(*light_inv)
 
     def OnDraw(self):
+        logging.info("DRAW")
         # clear color and depth buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        # self.processor.updatenow()
-        # index = self.processor.get_index()
-        # if index:
-        #     glCallList(index)
-        # glutWireCube(1.0)
-        if self.tank:
-            self.tank_draw.draw(self.tank)
+        if self.peachy_setup:
+            scaled_setup = self.peachy_setup.get_scaled_to_fit(1.0)
+            self.tank_draw.draw(scaled_setup.tank)
+            self.printer_draw.draw(scaled_setup.printer)
 
         if self.size is None:
             self.size = self.GetClientSize()
