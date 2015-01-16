@@ -157,5 +157,10 @@ class TankTest(unittest.TestCase, Conversions):
         self.assertAlmostEquals(expected_weight_kg, tank.weight_kg)
 
 
+class PrinterTest(unittest.TestCase, Conversions):
+
+    def setUp(self):
+        pass
+
 if __name__ == '__main__':
     unittest.main()

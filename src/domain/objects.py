@@ -1,4 +1,4 @@
-from math import pi
+from math import pi, atan, tan
 from conversions import Conversions
 
 
@@ -20,7 +20,7 @@ class Tank(Conversions):
         if shape in self.shapes:
             self._shape = shape
         else:
-            raise Exception("Unacceptable Shape Must be: %s" % ",".join(self.shapes))
+            raise Exception("Unacceptable shape %s must be: %s" % (shape, ",".join(self.shapes)))
 
     @property
     def outside_radius_mm(self):
@@ -85,8 +85,11 @@ class Tank(Conversions):
 
 
 class Printer(object):
-    def __init__(self, height_mm, relitive_size=1.0):
+    def __init__(self, height_mm, projection_distance, projection_radius, projection_shape, relitive_size=1.0):
         self._height_mm = height_mm
+        self._projection_shape = projection_shape
+        self._projection_distance = projection_distance
+        self._projection_radius = projection_radius
         self._relitive_size = relitive_size
 
     @property
@@ -97,10 +100,25 @@ class Printer(object):
     def relitive_size(self):
         return self._relitive_size
 
+    @property
+    def deflection(self):
+        return atan(self._projection_radius / self._projection_distance)
+
+    @property
+    def radius_at_base(self):
+        return tan(self.deflection) * self._height_mm
+
+    @property
+    def projection_shape(self):
+        return self._projection_shape
+
     def get_scaled(self, scale):
         return Printer(
             self._height_mm * scale,
-            self._relitive_size * scale
+            self._projection_distance * scale,
+            self._projection_radius * scale,
+            self._projection_shape,
+            relitive_size=self._relitive_size * scale
             )
 
 

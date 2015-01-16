@@ -31,6 +31,7 @@ class Canvas(glcanvas.GLCanvas,):
         self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
         self.peachy_setup = None
+        self.enviroment_draw = DrawEnvironment()
         self.tank_draw = DrawTank()
         self.printer_draw = DrawPrinter()
         glutInit()
@@ -101,8 +102,7 @@ class Canvas(glcanvas.GLCanvas,):
         glEnable(GL_LIGHT0)
         glEnable(GL_LIGHT1)
 
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.0, 0.0, 0.0, 1.0])
         # glShadeModel(GL_SMOOTH)
         # glEnable(GL_COLOR_MATERIAL)
@@ -129,10 +129,13 @@ class Canvas(glcanvas.GLCanvas,):
     #         glTranslatef(*light_inv)
 
     def OnDraw(self):
-        logging.info("DRAW")
+        if not self.init:
+            return
+        logging.debug("DRAW")
         # clear color and depth buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
+        self.enviroment_draw.draw(None)
         if self.peachy_setup:
             scaled_setup = self.peachy_setup.get_scaled_to_fit(1.0)
             self.tank_draw.draw(scaled_setup.tank)

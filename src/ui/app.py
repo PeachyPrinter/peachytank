@@ -174,8 +174,10 @@ class DisplayPanel(wx.Panel):
 
         if self.shape_cylinder.GetValue():
             shape = 'Cylinder'
+            projection_shape = 'Circle'
         else:
             shape = 'Box'
+            projection_shape = 'Square'
 
         tank = Tank(
             self.tank_height_slider.GetValue(),
@@ -184,7 +186,12 @@ class DisplayPanel(wx.Panel):
             1199.8,
             shape
             )
-        printer = Printer(self.tank_height_slider.GetValue() + self.printer_height_slider.GetValue())
+        printer = Printer(
+            self.tank_height_slider.GetValue() + self.printer_height_slider.GetValue(),
+            self.printer_height_slider.GetValue(),
+            self.printer_width_slider.GetValue(),
+            projection_shape
+            )
         peachy_setup = PeachySetup(tank, printer)
         self.api.set_tank(tank)
 
