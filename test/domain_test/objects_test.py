@@ -7,7 +7,7 @@ from math import pi
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
-from domain.objects import Tank
+from domain.objects import Tank, Printer
 from domain.conversions import Conversions
 
 
@@ -161,6 +161,28 @@ class PrinterTest(unittest.TestCase, Conversions):
 
     def setUp(self):
         pass
+
+    def test_deflection_should_be_calculated_based_on_distance(self):
+        height = 8
+        shape = 'Square'
+        projection_distance = 4.0
+        projection_radius = 4.0
+
+        expected_deflection = pi / 4.0
+
+        printer = Printer(height, projection_distance, projection_radius, shape)
+        self.assertEqual(expected_deflection, printer.deflection)
+
+    def test_inputs_should_be_converted_to_floats(self):
+        height = 8
+        shape = 'Square'
+        projection_distance = 12
+        projection_radius = 6
+
+        expected_deflection = pi / 9
+
+        printer = Printer(height, projection_distance, projection_radius, shape)
+        self.assertEqual(expected_deflection, printer.deflection)
 
 if __name__ == '__main__':
     unittest.main()

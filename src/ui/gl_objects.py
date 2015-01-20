@@ -9,6 +9,39 @@ class GLObject(object):
     def draw(self, domain_object):
         raise NotImplementedError()
 
+class Axis(GLObject):
+    def __init__(self):
+        self.quad = glu.gluNewQuadric()
+
+    def arrow(self):
+        glu.gluCylinder(self.quad, 0.005, 0.005, 0.7, 100, 1)
+        gl.glTranslatef(0.0, 0.0, 0.7)
+        glu.gluCylinder(self.quad, 0.03, 0.0, 0.1, 100, 1)
+        gl.glTranslatef(0.0, 0.0, -0.7)
+
+    def draw(self, ignored):
+        #RED X
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_DIFFUSE,  [0.8, 0.2, 0.2, 1.0])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_SPECULAR, [0.9, 0.5, 0.5, 1.0])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [0.2, 0.1, 0.1, 1.0])
+        gl.glRotate(90, 0.0, 1.0, 0.0)
+        self.arrow()
+        gl.glRotate(-90, 0.0, 1.0, 0.0)
+
+        #GREEN Y
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_DIFFUSE,  [0.2, 0.8, 0.2, 1.0])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_SPECULAR, [0.5, 0.9, 0.5, 1.0])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [0.1, 0.2, 0.1, 1.0])
+        gl.glRotate(90, 1.0, 0.0, 0.0)
+        self.arrow()
+        gl.glRotate(-90, 1.0, 0.0, 0.0)
+
+        #BLUE Z
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_DIFFUSE,  [0.2, 0.2, 0.8, 1.0])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_SPECULAR, [0.5, 0.5, 0.9, 1.0])
+        gl.glMaterialfv(gl.GL_FRONT, gl.GL_EMISSION, [0.1, 0.1, 0.2, 1.0])
+        self.arrow()
+
 
 class DrawTank(GLObject):
     def __init__(self):

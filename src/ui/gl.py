@@ -6,9 +6,10 @@ import logging
 
 from domain.objects import Tank
 from gl_objects import *
+from gl_helpers import JGLHelpers
 
 
-class Canvas(glcanvas.GLCanvas,):
+class Canvas(glcanvas.GLCanvas):
 
     def __init__(self, parent):
         glcanvas.GLCanvas.__init__(self, parent, -1)
@@ -34,6 +35,8 @@ class Canvas(glcanvas.GLCanvas,):
         self.enviroment_draw = DrawEnvironment()
         self.tank_draw = DrawTank()
         self.printer_draw = DrawPrinter()
+        self.axis = Axis()
+        self.jgl = JGLHelpers()
         glutInit()
 
     def OnEraseBackground(self, event):
@@ -48,6 +51,8 @@ class Canvas(glcanvas.GLCanvas,):
         size = self.size = self.GetClientSize()
         # self.SetCurrent(self.context)
         glViewport(0, 0, size.width, size.height)
+        self.jgl.width = size.width
+        self.jgl.height = size.height
 
     def OnPaint(self, event):
         # dc = wx.PaintDC(self)
@@ -98,7 +103,7 @@ class Canvas(glcanvas.GLCanvas,):
 
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_LIGHTING)
-        
+
         glEnable(GL_LIGHT0)
         glEnable(GL_LIGHT1)
 
@@ -131,6 +136,7 @@ class Canvas(glcanvas.GLCanvas,):
     def OnDraw(self):
         if not self.init:
             return
+        glMatrixMode(GL_MODELVIEW)
         logging.debug("DRAW")
         # clear color and depth buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -140,6 +146,7 @@ class Canvas(glcanvas.GLCanvas,):
             scaled_setup = self.peachy_setup.get_scaled_to_fit(1.0)
             self.tank_draw.draw(scaled_setup.tank)
             self.printer_draw.draw(scaled_setup.printer)
+            self.axis.draw(None)
 
         if self.size is None:
             self.size = self.GetClientSize()
@@ -174,5 +181,7 @@ class Canvas(glcanvas.GLCanvas,):
 
         self.last_scale = self.scale
         self.lastrotx, self.lastroty = self.xrot, self.yrot
+
+        self.jgl.drawString("Scale: {0:.2f}\nRotationX: {1:.2f}\nRotationY: {2:.2f}\n ".format(self.scale, self.xrot * xScale, self.yrot * yScale))
 
         self.SwapBuffers()

@@ -86,10 +86,10 @@ class Tank(Conversions):
 
 class Printer(object):
     def __init__(self, height_mm, projection_distance, projection_radius, projection_shape, relitive_size=1.0):
-        self._height_mm = height_mm
+        self._height_mm = float(height_mm)
         self._projection_shape = projection_shape
-        self._projection_distance = projection_distance
-        self._projection_radius = projection_radius
+        self._projection_distance = float(projection_distance)
+        self._projection_radius = float(projection_radius)
         self._relitive_size = relitive_size
 
     @property
@@ -111,6 +111,9 @@ class Printer(object):
     @property
     def projection_shape(self):
         return self._projection_shape
+
+    def dpi(self, height):
+        return 0
 
     def get_scaled(self, scale):
         return Printer(
